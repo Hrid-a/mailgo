@@ -72,11 +72,6 @@ func TestWriteResult(t *testing.T) {
 		Domain: "example.com",
 		Valid:  true,
 		Status: StatusDeliverable,
-		DNS: DNS{
-			HasMX:     true,
-			HasSPF:    true,
-			SPFRecord: "v=spf1 include:_spf.example.com ~all",
-		},
 		SMTP: SMTP{
 			HostExists:  true,
 			Deliverable: true,
@@ -98,7 +93,6 @@ func TestWriteResult(t *testing.T) {
 			result.Email,
 			result.Domain,
 			string(result.Status),
-			result.DNS.SPFRecord,
 		} {
 			if !strings.Contains(out, want) {
 				t.Errorf("output missing %q\ngot:\n%s", want, out)

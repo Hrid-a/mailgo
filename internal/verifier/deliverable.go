@@ -6,8 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"net/smtp"
-	"strings"
-	"sync"
+	"sync/atomic"
 	"time"
 
 	"golang.org/x/net/idna"
@@ -111,33 +110,23 @@ func newSMTPClient(domain string, connectTimeout time.Duration) (net.Conn, *smtp
 	}
 
 	ch := make(chan any, len(mxRecords))
-
-	var done bool
-	var mu sync.Mutex
+	var won atomic.Bool
 
 	for i, r := range mxRecords {
 		addr := r.Host + smtpPort
-		index := i
+		mx := mxRecords[i]
 		go func() {
 			conn, c, err := dialSMTP(addr, connectTimeout)
 			if err != nil {
-				mu.Lock()
-				if !done {
-					ch <- err
-				}
-				mu.Unlock()
+				ch <- err
 				return
 			}
 
-			mu.Lock()
-			switch {
-			case !done:
-				done = true
-				ch <- smtpResult{conn: conn, client: c, mx: mxRecords[index]}
-			default:
+			if won.CompareAndSwap(false, true) {
+				ch <- smtpResult{conn: conn, client: c, mx: mx}
+			} else {
 				c.Close()
 			}
-			mu.Unlock()
 		}()
 	}
 
@@ -174,36 +163,6 @@ func dialSMTP(addr string, connectTimeout time.Duration) (net.Conn, *smtp.Client
 	}
 
 	return conn, client, nil
-}
-
-// checkDNS populates MX, SPF, and DMARC fields on the Result
-func checkDNS(domain string) DNS {
-	var dns DNS
-
-	mxRecords, err := net.LookupMX(domain)
-	if err == nil && len(mxRecords) > 0 {
-		dns.HasMX = true
-	}
-
-	txtRecords, _ := net.LookupTXT(domain)
-	for _, record := range txtRecords {
-		if strings.HasPrefix(record, "v=spf1") {
-			dns.HasSPF = true
-			dns.SPFRecord = record
-			break
-		}
-	}
-
-	dmarcRecords, _ := net.LookupTXT("_dmarc." + domain)
-	for _, record := range dmarcRecords {
-		if strings.HasPrefix(record, "v=DMARC1") {
-			dns.HasDMARC = true
-			dns.DMARCRecord = record
-			break
-		}
-	}
-
-	return dns
 }
 
 // domainToASCII converts an internationalized domain name to its ASCII form

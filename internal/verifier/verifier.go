@@ -37,20 +37,11 @@ const (
 	StatusUnknown       Status = "unknown"
 )
 
-type DNS struct {
-	HasMX       bool   `json:"has_mx"`
-	HasSPF      bool   `json:"has_spf"`
-	SPFRecord   string `json:"spf_record,omitempty"`
-	HasDMARC    bool   `json:"has_dmarc"`
-	DMARCRecord string `json:"dmarc_record,omitempty"`
-}
-
 type Result struct {
 	Email  string `json:"email"`
 	Domain string `json:"domain"`
 	Valid  bool   `json:"valid"`
 	Status Status `json:"status"`
-	DNS    DNS    `json:"dns"`
 	SMTP   SMTP   `json:"smtp"`
 	Error  string `json:"error,omitempty"`
 }
@@ -155,31 +146,18 @@ func (v *Verifier) writeResult(r Result) error {
 		return err
 	}
 
-	spf := fmt.Sprintf("%v", r.DNS.HasSPF)
-	if r.DNS.SPFRecord != "" {
-		spf += " (" + r.DNS.SPFRecord + ")"
-	}
-
-	dmarc := fmt.Sprintf("%v", r.DNS.HasDMARC)
-	if r.DNS.DMARCRecord != "" {
-		dmarc += " (" + r.DNS.DMARCRecord + ")"
-	}
-
 	errLine := ""
 	if r.Error != "" {
 		errLine = "Error       : " + r.Error + "\n"
 	}
 
 	_, err := fmt.Fprintf(v.output,
-		"\n\nEmail       : %s\nDomain      : %s\nValid       : %v\nStatus      : %v\n%sMX          : %v\nSPF         : %s\nDMARC       : %s\nHost Exists : %v\nCatch-All   : %v\nDeliverable : %v\nFull Inbox  : %v\nDisabled    : %v\n\n%s\n",
+		"\n\nEmail       : %s\nDomain      : %s\nValid       : %v\nStatus      : %v\n%sHost Exists : %v\nCatch-All   : %v\nDeliverable : %v\nFull Inbox  : %v\nDisabled    : %v\n\n%s\n",
 		r.Email,
 		r.Domain,
 		r.Valid,
 		r.Status,
 		errLine,
-		r.DNS.HasMX,
-		spf,
-		dmarc,
 		r.SMTP.HostExists,
 		r.SMTP.CatchAll,
 		r.SMTP.Deliverable,
@@ -206,14 +184,6 @@ func (v *Verifier) Verify(email string) (Result, error) {
 		Domain: address.Domain,
 	}
 
-	result.DNS = checkDNS(address.Domain)
-
-	if !result.DNS.HasMX {
-		result.Status = StatusUndeliverable
-		result.Valid = false
-		return result, nil
-	}
-
 	// SMTP deliverability check
 
 	smtp, err := v.CheckSMTP(address.Domain, address.Username)
@@ -221,22 +191,24 @@ func (v *Verifier) Verify(email string) (Result, error) {
 		result.Error = err.Error()
 	}
 
-	if smtp != nil {
-		result.SMTP = *smtp
-		switch {
-		case smtp.Deliverable:
-			result.Status = StatusDeliverable
-		case smtp.CatchAll:
-			result.Status = StatusUnknown
-		case smtp.HostExists:
-			// Connected fine but RCPT TO was rejected — could be server
-			// anti-harvesting policy, not necessarily a missing mailbox
-			result.Status = StatusRisky
-		default:
-			result.Status = StatusUndeliverable
-		}
-	} else {
+	if smtp == nil {
 		result.Status = StatusUnknown
+		result.Valid = false
+		return result, nil
+	}
+
+	result.SMTP = *smtp
+	switch {
+	case smtp.Deliverable:
+		result.Status = StatusDeliverable
+	case smtp.CatchAll:
+		result.Status = StatusUnknown
+	case smtp.HostExists:
+		// Connected fine but RCPT TO was rejected — could be server
+		// anti-harvesting policy, not necessarily a missing mailbox
+		result.Status = StatusRisky
+	default:
+		result.Status = StatusUndeliverable
 	}
 
 	result.Valid = result.Status == StatusDeliverable
