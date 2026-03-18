@@ -47,6 +47,10 @@ trap 'rm -rf "$TMP"' EXIT
 curl -fsSL "$URL" -o "$TMP/$ARCHIVE"
 tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
 
-install -m 755 "$TMP/$BINARY" "$INSTALL_DIR/$BINARY"
+if [ "$(id -u)" = "0" ]; then
+  install -m 755 "$TMP/$BINARY" "$INSTALL_DIR/$BINARY"
+else
+  sudo install -m 755 "$TMP/$BINARY" "$INSTALL_DIR/$BINARY"
+fi
 
 echo "$BINARY installed to $INSTALL_DIR/$BINARY"
