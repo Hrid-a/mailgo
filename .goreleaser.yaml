@@ -38,18 +38,18 @@ archives:
       - goos: windows
         formats: [zip]
 
-brews:
+homebrew_casks:
   - name: mailgo
     homepage: https://github.com/Hrid-a/mailgo
     description: "CLI tool to verify email deliverability via SMTP"
-    tap:
+    repository:
       owner: Hrid-a
       name: homebrew-mailgo
     commit_author:
       name: Hrid-a
       email: me@ahmedhrid.com
 
-scoop:
+scoops:
   - name: mailgo
     homepage: https://github.com/Hrid-a/mailgo
     description: "CLI tool to verify email deliverability via SMTP"
@@ -57,7 +57,6 @@ scoop:
     repository:
       owner: Hrid-a
       name: scoop-mailgo
-      token: "{{ .Env.SCOOP_GITHUB_TOKEN }}"
 
 checksum:
   name_template: 'checksums.txt'

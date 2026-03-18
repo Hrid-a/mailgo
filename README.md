@@ -30,7 +30,7 @@ Every address gets one of four verdicts: `deliverable` · `undeliverable` · `ri
 
 ## Quick Start
 
-### macOS / Linux — Homebrew
+### macOS — Homebrew
 
 ```bash
 brew tap Hrid-a/mailgo
@@ -42,6 +42,12 @@ brew install mailgo
 ```bash
 scoop bucket add mailgo https://github.com/Hrid-a/scoop-mailgo.git
 scoop install mailgo
+```
+
+### Linux — install script
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Hrid-a/mailgo/master/install.sh | sh
 ```
 
 ### Go install
