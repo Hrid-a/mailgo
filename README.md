@@ -2,7 +2,7 @@
 
 `mailgo` is a Go CLI tool that verifies whether an email address is deliverable by running syntax checks and a live SMTP handshake — giving you a clear verdict before you send.
 
-<!-- TODO: add a demo GIF here (e.g. with vhs or asciinema) -->
+<img src="_mailgo.png" alt="mailgo image visualization" height="300">
 
 ---
 

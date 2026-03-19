@@ -21,16 +21,14 @@ var verifyCmd = &cobra.Command{
     2. DNS / MX lookup        — does the domain have mail servers?             
     3. SMTP handshake         — does this specific mailbox exist?              
     4. Catch-all detection    — does the server accept everything?             
-    5. Disposable check       — is it a throwaway address?                     
-    6. Role-based check       — is it admin@, info@, noreply@?                 
                                                                                
   Returns a verdict: deliverable | undeliverable | risky | unknown             
                                                                                
   Examples:                                                                    
     mailgo verify user@example.com
     mailgo verify user@example.com --json                              
-    mailgo verify --file emails.txt --concurrency 10
-    mailgo verify --file emails.txt --output results.json`,
+    mailgo verify user@example.com --output results.json
+	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		file, _ := cmd.Flags().GetString("file")
 

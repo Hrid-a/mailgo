@@ -20,12 +20,10 @@ var rootCmd = &cobra.Command{
 	  - DNS / MX record lookup                                                   
 	  - SMTP handshake (mailbox existence)                                       
 	  - Catch-all domain detection                                               
-	  - Disposable address detection                                             
-	  - Role-based address detection                                             
 																				 
 	Example:                                                                     
 	  mailgo verify user@example.com                                     
-	  mailgo verify --file emails.txt --concurrency 5`,
+	  mailgo verify user@example.com --json`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -49,5 +47,5 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
