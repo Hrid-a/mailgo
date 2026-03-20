@@ -110,36 +110,36 @@ EOF
     fi
 done
 
-cat > "$MAIN_PACKAGE_DIR/bin/mailgo" << 'EOF'
+cat > "$MAIN_PACKAGE_DIR/bin/mailgo" << EOF
 #!/usr/bin/env node
 
 const { execFileSync } = require('child_process')
 
-const packageName = 'mailgo'
+const packageName = '$PACKAGE_NAME'
 
 const platformPackages = {
-  'darwin-x64':   `${packageName}-darwin-x64`,
-  'darwin-arm64': `${packageName}-darwin-arm64`,
-  'linux-x64':    `${packageName}-linux-x64`,
-  'linux-arm64':  `${packageName}-linux-arm64`,
-  'win32-x64':    `${packageName}-win32-x64`,
-  'win32-arm64':  `${packageName}-win32-arm64`
+  'darwin-x64':   \`\${packageName}-darwin-x64\`,
+  'darwin-arm64': \`\${packageName}-darwin-arm64\`,
+  'linux-x64':    \`\${packageName}-linux-x64\`,
+  'linux-arm64':  \`\${packageName}-linux-arm64\`,
+  'win32-x64':    \`\${packageName}-win32-x64\`,
+  'win32-arm64':  \`\${packageName}-win32-arm64\`
 }
 
 function getBinaryPath() {
-  const platformKey = `${process.platform}-${process.arch}`
+  const platformKey = \`\${process.platform}-\${process.arch}\`
   const platformPackageName = platformPackages[platformKey]
 
   if (!platformPackageName) {
-    console.error(`mailgo: unsupported platform ${platformKey}`)
+    console.error(\`mailgo: unsupported platform \${platformKey}\`)
     process.exit(1)
   }
 
   try {
     const binaryName = process.platform === 'win32' ? 'mailgo.exe' : 'mailgo'
-    return require.resolve(`${platformPackageName}/bin/${binaryName}`)
+    return require.resolve(\`\${platformPackageName}/bin/\${binaryName}\`)
   } catch (e) {
-    console.error(`mailgo: platform package ${platformPackageName} not found`)
+    console.error(\`mailgo: platform package \${platformPackageName} not found\`)
     process.exit(1)
   }
 }
