@@ -53,7 +53,7 @@ curl -fsSL https://raw.githubusercontent.com/Hrid-a/mailgo/master/install.sh | s
 ### npm
 
 ```bash
-npm install -g @hrid_a/mailgo
+npm install -g @mailgo-cli/mailgo
 ```
 
 ### Go install
