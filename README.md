@@ -50,6 +50,12 @@ scoop install mailgo
 curl -fsSL https://raw.githubusercontent.com/Hrid-a/mailgo/master/install.sh | sh
 ```
 
+### npm
+
+```bash
+npm install -g @hrid_a/mailgo
+```
+
 ### Go install
 
 ```bash

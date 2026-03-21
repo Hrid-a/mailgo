@@ -158,19 +158,22 @@ cat > "$MAIN_PACKAGE_DIR/package.json" << EOF
 {
   "name": "$PACKAGE_NAME",
   "version": "$VERSION",
-  "description": "CLI tool to verify email deliverability via SMTP",
+  "description": "Verify email deliverability via syntax checks and live SMTP handshake — catch bad addresses before you send",
   "bin": {
     "mailgo": "bin/mailgo"
   },
   "optionalDependencies": {
     $OPTIONAL_DEPS
   },
-  "keywords": ["email", "smtp", "cli", "deliverability"],
+  "keywords": ["email", "smtp", "cli", "deliverability", "email-verification", "email-validation", "catch-all", "bulk-email", "mailbox", "go"],
   "author": "Hrid-a",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Hrid-a/mailgo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Hrid-a/mailgo/issues"
   },
   "homepage": "https://github.com/Hrid-a/mailgo",
   "engines": {
